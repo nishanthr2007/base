@@ -49,8 +49,8 @@ def parse_numbers(raw: list[str]) -> list[float]:
 
 def run_app_mode() -> int:
     """Run the default application. Returns exit code."""
-    from load_env import load_env
     from app import run as app_run
+    from load_env import load_env
 
     load_env()
     app_run()
@@ -64,7 +64,7 @@ def run_watch_mode(args: argparse.Namespace) -> int:
         from watchdog.observers import Observer
     except ImportError:
         print(
-            "Error: --watch requires watchdog. Install with: pip install -e \".[dev]\"",
+            'Error: --watch requires watchdog. Install with: pip install -e ".[dev]"',
             file=sys.stderr,
         )
         return 1

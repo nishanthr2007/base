@@ -98,6 +98,7 @@ If you see `uname` or `sed: command not found`:
 | [SETUP.md](SETUP.md) | Setup commands, layout, Git Bash fixes |
 | [SETUP_STEPS.md](SETUP_STEPS.md) | Step-by-step setup walkthrough |
 | [RENAME.md](RENAME.md) | Rename folder vs project; copy skeleton checklist |
+| [HOOKS.md](HOOKS.md) | Husky, conventional commits, Ruff on staged files |
 | [CHALLENGES.md](CHALLENGES.md) | Issues and fixes (Mermaid flowchart) |
 
 ## License

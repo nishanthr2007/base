@@ -163,9 +163,20 @@ source scripts/activate.sh
 
 See [CHALLENGES.md](CHALLENGES.md) for the full troubleshooting flowchart.
 
+## Git hooks (optional)
+
+Husky + conventional commits + Ruff on staged files. See [HOOKS.md](HOOKS.md).
+
+```bash
+pip install -e ".[dev]"
+npm install
+npm run prepare
+```
+
 ## Related docs
 
 - [SETUP_STEPS.md](SETUP_STEPS.md) — Full step-by-step walkthrough
 - [RENAME.md](RENAME.md) — Rename folder vs project; skeleton copy checklist
+- [HOOKS.md](HOOKS.md) — Husky, commitlint, lint-staged
 - [CHALLENGES.md](CHALLENGES.md) — Problems and fixes (flowchart)
 - [README.md](README.md) — Project overview

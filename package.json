@@ -1,0 +1,20 @@
+{
+  "name": "base",
+  "private": true,
+  "description": "Git hooks and lint-staged for the base Python skeleton",
+  "scripts": {
+    "prepare": "husky",
+    "lint": "ruff check src",
+    "format": "ruff format src",
+    "lint:staged": "lint-staged"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.0"
+  },
+  "lint-staged": {
+    "*.py": "bash scripts/lint-staged-ruff.sh"
+  }
+}
