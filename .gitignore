@@ -1,0 +1,31 @@
+# Virtual environment
+.venv/
+venv/
+env/bin/
+env/lib/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Logs (keep directory, ignore log files)
+logs/*.log
+logs/*.log.*
+
+# Environment secrets (optional: track templates only)
+# env/.env.*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
