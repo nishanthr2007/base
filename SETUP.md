@@ -76,15 +76,18 @@ base/
 ├── logs/
 │   ├── .gitkeep
 │   └── app.log             # Created at runtime (gitignored)
+├── package.json            # Husky / commitlint / lint-staged config
 ├── scripts/
 │   ├── activate.sh         # Activate + prepend Git usr/bin to PATH
-│   └── patch_venv_activate.sh  # Patch .venv after venv recreate
+│   ├── patch_venv_activate.sh  # Patch .venv after venv recreate
+│   └── rename_project.sh   # Rename package, CLI, envs, docs, and setup
 ├── src/
 │   ├── main.py             # CLI, logging, watch mode
 │   ├── load_env.py         # Loads env/.env.<ENVIRONMENT>
 │   ├── core.py             # Reusable business logic
 │   └── app.py              # Default app entry (customize this)
 ├── .venv/                  # Virtual environment (gitignored)
+├── HOOKS.md                # Hook setup and behavior
 ├── pyproject.toml
 ├── README.md
 ├── SETUP.md                # This file
@@ -99,6 +102,7 @@ base/
 |--------|-------------|
 | `bash scripts/patch_venv_activate.sh` | After `python -m venv .venv` (fixes `uname` errors on activate) |
 | `source scripts/activate.sh` | Git Bash when `sed` still missing from `~/.bashrc` at startup |
+| `bash scripts/rename_project.sh <new-name>` | Rename package/CLI/envs and refresh local setup from the repo root |
 
 ## Environment variables
 
@@ -113,13 +117,105 @@ base/
 
 See **[RENAME.md](RENAME.md)** for the full guide (required vs optional files, venv steps, checklist).
 
-Quick summary:
+You have two options:
+
+### Option 1: Manual rename
 
 1. Copy or rename the folder (e.g. `base` → `my-service`).
-2. Update `pyproject.toml` (`name`, `[project.scripts]`).
-3. Set `APP_NAME=my-service` in all `env/.env.*` files.
-4. Recreate `.venv` (recommended), run `bash scripts/patch_venv_activate.sh`, then `pip install -e ".[dev]"`.
-5. Run with the new CLI name: `my-service`.
+2. Use a project name without spaces.
+3. Update:
+   - `pyproject.toml` → `[project] name`
+   - `pyproject.toml` → `[project.scripts]`
+   - `env/.env.dev`, `env/.env.qa`, `env/.env.prod` → `APP_NAME=my-service`
+   - optionally `src/app.py`, `.vscode/settings.json`, and docs
+4. Recreate `.venv` (recommended), then:
+
+```bash
+python -m venv .venv
+bash scripts/patch_venv_activate.sh
+pip install -e ".[dev]"
+```
+
+5. If you use hook files, also run:
+
+```bash
+npm install
+npm run prepare
+```
+
+6. Refresh the terminal if needed, then run with the new CLI name:
+
+```bash
+hash -r
+source .venv/Scripts/activate
+my-service
+```
+
+### Option 2: Bash helper script
+
+Run this from the repo root:
+
+```bash
+bash scripts/rename_project.sh my-service
+```
+
+Project names must not contain spaces.
+
+Or the full form:
+
+```bash
+bash scripts/rename_project.sh --old-name base --new-name my-service
+```
+
+With description and author:
+
+```bash
+bash scripts/rename_project.sh --old-name base --new-name my-service --description "My Service CLI project" --author "Your Name"
+```
+
+Example: converting `base` to `longchain`
+
+Run this from the repo root:
+
+```bash
+bash scripts/rename_project.sh --old-name base --new-name longchain
+```
+
+Short version, since `base` is already the default old name:
+
+```bash
+bash scripts/rename_project.sh longchain
+```
+
+If you also want to set the project description and author in the same run:
+
+```bash
+bash scripts/rename_project.sh --old-name base --new-name longchain --description "LongChain CLI project" --author "Your Name"
+```
+
+Useful options:
+
+```bash
+bash scripts/rename_project.sh my-service --skip-docs
+bash scripts/rename_project.sh my-service --keep-venv
+bash scripts/rename_project.sh my-service --skip-npm
+```
+
+What the script also does for you:
+
+- updates `package.json` / `package-lock.json` when present
+- rewrites `README.md`, `SETUP.md`, `SETUP_STEPS.md`, and `CHALLENGES.md` unless `--skip-docs` is used
+- recreates `.venv` by default, patches activate, upgrades `pip`, and runs `pip install -e ".[dev]"`
+- runs `npm install` and `npm run prepare` when `package.json` exists, unless `--skip-npm` is used
+- keeps `RENAME.md` and `HOOKS.md` unchanged
+
+After the script finishes, refresh the terminal if needed and run the new CLI:
+
+```bash
+hash -r
+source .venv/Scripts/activate
+my-service
+```
 
 ## Logs
 

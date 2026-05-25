@@ -17,6 +17,67 @@ This guide explains what happens when you **rename the folder** vs when you **re
 
 ---
 
+## Fast rename with script
+
+Instead of updating files manually, you can use the included rename helper:
+
+Run this from the **repo root**:
+
+```bash
+bash scripts/rename_project.sh --old-name base --new-name longchain
+```
+
+Short version, since `base` is already the default old name:
+
+```bash
+bash scripts/rename_project.sh longchain
+```
+
+Project names must not contain spaces.
+
+If you also want to set the project description and author in the same run:
+
+```bash
+bash scripts/rename_project.sh --old-name base --new-name longchain --description "LongChain CLI project" --author "Your Name"
+```
+
+What the script updates:
+
+- `pyproject.toml` project name and CLI entry
+- `env/.env.dev`, `env/.env.qa`, `env/.env.prod` → `APP_NAME`
+- `src/app.py` default `APP_NAME` fallback
+- `.vscode/settings.json` terminal profile label, when present
+- `package.json` name/description, when present
+- `package-lock.json` name, when present
+- `README.md`, `SETUP.md`, `SETUP_STEPS.md`, and `CHALLENGES.md` (unless you pass `--skip-docs`)
+- `.venv` recreation by default (unless you pass `--keep-venv`)
+- `pip install -e ".[dev]"` after rename
+- npm hook setup by default (unless you pass `--skip-npm` and `package.json` exists)
+
+Useful options:
+
+```bash
+--skip-docs   # do not rewrite README.md, SETUP.md, SETUP_STEPS.md, CHALLENGES.md
+--keep-venv   # keep existing .venv instead of recreating it
+--skip-npm    # skip npm install and npm run prepare
+```
+
+Notes:
+
+- `--skip-docs` only skips `README.md`, `SETUP.md`, `SETUP_STEPS.md`, and `CHALLENGES.md`
+- `RENAME.md` and `HOOKS.md` are not rewritten by the script
+- `--keep-venv` keeps the existing `.venv`, but the script still upgrades `pip` and runs `pip install -e ".[dev]"`
+- If `.venv` is missing, the script creates one even when `--keep-venv` is used
+- The script requires these files to exist before it runs: `pyproject.toml`, `src/app.py`, `env/.env.dev`, `env/.env.qa`, `env/.env.prod`
+
+If you want to see the built-in help:
+
+```bash
+bash scripts/rename_project.sh --help
+```
+
+---
+
 ## What you must update
 
 Example: new project name `**my-api`**, CLI command `**my-api**`.
@@ -89,6 +150,20 @@ cd my-api
 
 Or rename in Explorer: `base` → `my-api`.
 
+If the copied project still uses the default template name `base`, you can rename it from the repo root with:
+
+```bash
+bash scripts/rename_project.sh my-api
+```
+
+After the script finishes in an already-open terminal, refresh the shell command cache:
+
+```bash
+hash -r
+source .venv/Scripts/activate
+my-api -v --env dev
+```
+
 #### What to skip when copy-pasting
 
 
@@ -115,6 +190,12 @@ npm install
 npm run prepare
 ```
 
+If you use the helper script instead of editing files manually, you can replace the manual rename steps with:
+
+```bash
+bash scripts/rename_project.sh my-api
+```
+
 ### 2. Edit required files
 
 1. `**pyproject.toml**`
@@ -138,6 +219,8 @@ pip install -e ".[dev]"
 npm install
 npm run prepare
 ```
+
+The helper script performs this setup for you automatically unless you pass `--keep-venv` and/or `--skip-npm`.
 
 ### 4. Verify
 
@@ -199,13 +282,14 @@ bash scripts/patch_venv_activate.sh
 - Do **not** change `pyproject.toml` if you want the template to stay `base`.
 - Keep the hook files only if you want every copied project to start with the same Husky/commitlint/lint-staged workflow.
 - For each new app: **copy** the folder, then follow [Step-by-step](#step-by-step-copy-skeleton-to-a-new-project) on the copy.
+- If you use the helper script, run it from the copied repo root: `bash scripts/rename_project.sh your-project-name`
 
 ### Start a real project
 
 - Copy `base` → `your-project-name`.
 - Update required files in the table above.
-- New venv + `pip install -e ".[dev]"`.
-- If you copied hook files, run `npm install` and `npm run prepare`.
+- New venv + `pip install -e ".[dev]"`, or use the helper script to do that automatically.
+- If you copied hook files, run `npm install` and `npm run prepare`, or let the helper script do it unless you pass `--skip-npm`.
 - Customize `src/app.py` with your logic.
 
 ---
@@ -223,11 +307,13 @@ Use when creating a new project from this skeleton:
 [ ] env/.env.prod:  APP_NAME
 [ ] (optional) src/app.py: default APP_NAME fallback
 [ ] (optional) .vscode/settings.json: terminal profile label
+[ ] (optional) package.json / package-lock.json: name + description
 [ ] (optional) copy hook files: package.json, package-lock.json, .husky/, commitlint.config.cjs
 [ ] rm -rf .venv && python -m venv .venv
 [ ] bash scripts/patch_venv_activate.sh
 [ ] pip install -e ".[dev]"
 [ ] (if using hooks) npm install && npm run prepare
+[ ] hash -r && reactivate terminal
 [ ] Run: <new-cli-name>
 [ ] Run: <new-cli-name> --watch --env dev -v
 ```

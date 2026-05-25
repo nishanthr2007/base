@@ -16,14 +16,17 @@ base/
 │   └── settings.json       # Git Bash profile for Cursor
 ├── env/                    # .env.dev, .env.qa, .env.prod
 ├── logs/                   # app.log (runtime, gitignored)
+├── package.json            # Husky / commitlint / lint-staged config
 ├── scripts/
 │   ├── activate.sh         # Git Bash activate helper
-│   └── patch_venv_activate.sh
+│   ├── patch_venv_activate.sh
+│   └── rename_project.sh   # Rename helper from repo root
 ├── src/
 │   ├── main.py             # CLI, logging, --watch
 │   ├── load_env.py
 │   ├── core.py
 │   └── app.py              # Customize your app here
+├── HOOKS.md
 ├── pyproject.toml
 ├── README.md
 ├── SETUP.md
@@ -86,10 +89,23 @@ If you see `uname` or `sed: command not found`:
 ## Reuse as a template
 
 1. Copy the `base` folder to a new directory.
-2. Rename folder and update `pyproject.toml` (`name`, `[project.scripts]`).
-3. Set `APP_NAME` in `env/.env.*` files.
-4. Edit `src/app.py` with your application logic.
-5. Run `pip install -e ".[dev]"` and `bash scripts/patch_venv_activate.sh` if using a new venv.
+2. Rename it manually, or from the repo root run:
+   ```bash
+   bash scripts/rename_project.sh my-service
+   ```
+   Example for converting `base` to `longchain`:
+   ```bash
+   bash scripts/rename_project.sh --old-name base --new-name longchain
+   # short version:
+   bash scripts/rename_project.sh longchain
+   ```
+3. Use a project name without spaces.
+4. If renaming manually, update `pyproject.toml` (`name`, `[project.scripts]`) and `APP_NAME` in `env/.env.*`.
+5. Edit `src/app.py` with your application logic.
+6. Run `pip install -e ".[dev]"` and `bash scripts/patch_venv_activate.sh` if using a new venv.
+7. If you copied hook files, run `npm install` and `npm run prepare`.
+
+The helper script also updates `package.json` / `package-lock.json` when present and refreshes the local install for you.
 
 ## Documentation
 

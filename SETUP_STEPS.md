@@ -97,7 +97,8 @@ Create:
 ```
 scripts/
 ├── activate.sh              # Prepends Git usr/bin, then sources activate
-└── patch_venv_activate.sh   # Patches .venv/Scripts/activate (no uname)
+├── patch_venv_activate.sh   # Patches .venv/Scripts/activate (no uname)
+└── rename_project.sh        # Renames package/CLI/envs/docs from repo root
 
 .vscode/
 └── settings.json            # Git Bash (base) profile + PATH
@@ -261,11 +262,33 @@ See [HOOKS.md](HOOKS.md) for details.
 See **[RENAME.md](RENAME.md)** for the complete rename guide, checklist, and examples.
 
 1. Copy entire `base` folder to a new name.
-2. Update `pyproject.toml` (`name`, script entry).
-3. Update `APP_NAME` in `env/.env.*`.
-4. Customize `src/app.py` with your logic.
-5. Recreate `.venv` (recommended), run `bash scripts/patch_venv_activate.sh`, then `pip install -e ".[dev]"`.
-6. If you copied the hook files, run `npm install` and `npm run prepare`.
+2. Either rename manually, or run the helper from the copied repo root:
+
+   ```bash
+   bash scripts/rename_project.sh my-api
+   ```
+
+   Example: converting `base` to `longchain`
+
+   ```bash
+   bash scripts/rename_project.sh --old-name base --new-name longchain
+   # short version:
+   bash scripts/rename_project.sh longchain
+   # with description and author:
+   bash scripts/rename_project.sh --old-name base --new-name longchain --description "LongChain CLI project" --author "Your Name"
+   ```
+
+3. The new project name must not contain spaces.
+4. If you rename manually, update `pyproject.toml` (`name`, script entry), `env/.env.*` (`APP_NAME`), and optionally `src/app.py`, `.vscode/settings.json`, and docs.
+5. If you rename manually, recreate `.venv` (recommended), run `python -m venv .venv`, `bash scripts/patch_venv_activate.sh`, then `pip install -e ".[dev]"`.
+6. If you copied the hook files and renamed manually, run `npm install` and `npm run prepare`.
+7. The helper script also updates `package.json` / `package-lock.json` when present, refreshes `.venv`, runs `pip install -e ".[dev]"`, and optionally runs npm setup.
+8. Refresh the terminal if the new CLI is not picked up immediately:
+
+   ```bash
+   hash -r
+   source .venv/Scripts/activate
+   ```
 
 **Result:** Reusable template for any future Python CLI/service project.
 
