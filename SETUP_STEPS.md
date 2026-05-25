@@ -227,7 +227,36 @@ If `sed: command not found` appears **before** you type anything, your `~/.bashr
 
 ---
 
-## Step 14: Copy skeleton for a new project
+## Step 14: Optional git hooks setup
+
+If you want Husky + commitlint + lint-staged:
+
+```bash
+npm install
+npm run prepare
+```
+
+Hook behavior for staged `*.py` files:
+
+1. `ruff format`
+2. `ruff check --fix`
+3. `ruff check`
+4. If lint errors remain, commit fails and writes `logs/lint-staged.log`
+5. If Ruff auto-fixes files, commit also fails intentionally so you can review and re-stage the updated files
+
+Typical flow after auto-fix:
+
+```bash
+git commit -m "fix(cli): clean imports"
+git add .
+git commit -m "fix(cli): clean imports"
+```
+
+See [HOOKS.md](HOOKS.md) for details.
+
+---
+
+## Step 15: Copy skeleton for a new project
 
 See **[RENAME.md](RENAME.md)** for the complete rename guide, checklist, and examples.
 
@@ -236,6 +265,7 @@ See **[RENAME.md](RENAME.md)** for the complete rename guide, checklist, and exa
 3. Update `APP_NAME` in `env/.env.*`.
 4. Customize `src/app.py` with your logic.
 5. Recreate `.venv` (recommended), run `bash scripts/patch_venv_activate.sh`, then `pip install -e ".[dev]"`.
+6. If you copied the hook files, run `npm install` and `npm run prepare`.
 
 **Result:** Reusable template for any future Python CLI/service project.
 

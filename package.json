@@ -4,9 +4,9 @@
   "description": "Git hooks and lint-staged for the base Python skeleton",
   "scripts": {
     "prepare": "husky",
-    "lint": "ruff check src",
-    "format": "ruff format src",
-    "lint:staged": "lint-staged"
+    "lint": "python -m ruff check src",
+    "format": "python -m ruff format src",
+    "lint:staged": "lint-staged --no-stash"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",

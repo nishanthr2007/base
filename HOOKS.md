@@ -24,7 +24,7 @@ npm run prepare
 
 | Hook | Trigger | Action |
 |------|---------|--------|
-| **pre-commit** | `git commit` | `lint-staged` → `ruff check --fix` + `ruff format` on **staged** `*.py` only |
+| **pre-commit** | `git commit` | `lint-staged --no-stash` → format, auto-fix, then **strict** `ruff check` on staged `*.py`; if lint fails or auto-fixes change files, details are written to `logs/lint-staged.log` and commit **aborted** |
 | **commit-msg** | After message entered | `commitlint` validates conventional commit format |
 
 ## Conventional commit format
@@ -65,14 +65,31 @@ git commit -m "feat(billing)add module"          # missing ": " after scope
 git commit -m "updated stuff"                    # not conventional format
 ```
 
+## Pre-commit lint flow (staged `*.py` only)
+
+1. `ruff format` — apply formatting  
+2. `ruff check --fix` — safe auto-fixes  
+3. `ruff check` — strict lint (PEP 8 / pyflakes / isort / naming per `pyproject.toml`)  
+4. If step 3 fails → write details to **`logs/lint-staged.log`** and **exit 1** (commit cancelled)  
+5. If auto-fixes changed any staged file → keep those changes locally, write review instructions to **`logs/lint-staged.log`**, and **exit 1**  
+6. If no errors and no auto-fix changes remain → remove `logs/lint-staged.log` if it existed  
+
+Open the log after a failed commit:
+
+```bash
+cat logs/lint-staged.log
+```
+
+If the hook auto-fixes files, the commit is intentionally stopped. Review the changes, run `git add ...`, then commit again.
+
 ## Manual commands
 
 ```bash
 npm run lint          # ruff check src/
 npm run format        # ruff format src/
 npm run lint:staged   # same as pre-commit (all staged *.py)
-ruff check --fix src/
-ruff format src/
+python -m ruff check src/
+python -m ruff format src/
 ```
 
 ## Copying this skeleton
@@ -80,7 +97,7 @@ ruff format src/
 Include in the new project (do not copy `node_modules/`):
 
 - `package.json`, `package-lock.json` (after `npm install`)
-- `commitlint.config.js`
+- `commitlint.config.cjs`
 - `.husky/`
 
 Then run `npm install` and `npm run prepare` in the new repo.

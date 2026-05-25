@@ -173,6 +173,23 @@ npm install
 npm run prepare
 ```
 
+Pre-commit behavior for staged `*.py` files:
+
+1. `ruff format`
+2. `ruff check --fix`
+3. `ruff check`
+4. If lint errors remain, commit fails and details are written to `logs/lint-staged.log`
+5. If Ruff auto-fixes files, commit also fails intentionally so you can review and re-stage the updated files
+
+Typical flow after auto-fix:
+
+```bash
+git commit -m "fix(cli): clean imports"
+# hook updates files and stops commit
+git add .
+git commit -m "fix(cli): clean imports"
+```
+
 ## Related docs
 
 - [SETUP_STEPS.md](SETUP_STEPS.md) — Full step-by-step walkthrough

@@ -19,6 +19,7 @@ build/
 # Logs (keep directory, ignore log files)
 logs/*.log
 logs/*.log.*
+logs/lint-staged.log
 
 # Environment secrets (optional: track templates only)
 # env/.env.*

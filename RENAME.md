@@ -102,6 +102,8 @@ Or rename in Explorer: `base` → `my-api`.
 
 **Minimum copy:** `src/`, `env/`, `scripts/`, `logs/.gitkeep`, `pyproject.toml`, `.gitignore`, and docs (`README.md`, `SETUP*.md`, etc.).
 
+**If you want the same git-hook setup too:** also copy `package.json`, `package-lock.json`, `commitlint.config.cjs`, and `.husky/`.
+
 **After copy (required):**
 
 ```bash
@@ -109,6 +111,8 @@ cd my-api
 python -m venv .venv
 bash scripts/patch_venv_activate.sh
 pip install -e ".[dev]"
+npm install
+npm run prepare
 ```
 
 ### 2. Edit required files
@@ -131,6 +135,8 @@ source .venv/Scripts/activate    # Git Bash
 # .\.venv\Scripts\Activate.ps1   # PowerShell
 python -m pip install --upgrade pip
 pip install -e ".[dev]"
+npm install
+npm run prepare
 ```
 
 ### 4. Verify
@@ -152,6 +158,7 @@ Expected log line (example):
 
 - Update `README.md` title and examples.
 - Rename Cursor profile in `.vscode/settings.json` if you use it.
+- Keep or remove the hook files depending on whether you want Husky + commitlint + lint-staged in the copied project.
 - Remove or rewrite setup docs if this copy is a real app, not a template.
 
 ---
@@ -163,6 +170,8 @@ You can avoid deleting `.venv` if you only changed `pyproject.toml` and env file
 ```bash
 source .venv/Scripts/activate
 pip install -e ".[dev]"
+npm install
+npm run prepare
 ```
 
 Then run the **new** CLI name (`my-api`). The old `base` command may remain in `.venv/Scripts/` until you reinstall; ignore or delete it.
@@ -188,6 +197,7 @@ bash scripts/patch_venv_activate.sh
 
 - Leave folder as `base` (or rename to `skeleton` for clarity only).
 - Do **not** change `pyproject.toml` if you want the template to stay `base`.
+- Keep the hook files only if you want every copied project to start with the same Husky/commitlint/lint-staged workflow.
 - For each new app: **copy** the folder, then follow [Step-by-step](#step-by-step-copy-skeleton-to-a-new-project) on the copy.
 
 ### Start a real project
@@ -195,6 +205,7 @@ bash scripts/patch_venv_activate.sh
 - Copy `base` → `your-project-name`.
 - Update required files in the table above.
 - New venv + `pip install -e ".[dev]"`.
+- If you copied hook files, run `npm install` and `npm run prepare`.
 - Customize `src/app.py` with your logic.
 
 ---
@@ -212,9 +223,11 @@ Use when creating a new project from this skeleton:
 [ ] env/.env.prod:  APP_NAME
 [ ] (optional) src/app.py: default APP_NAME fallback
 [ ] (optional) .vscode/settings.json: terminal profile label
+[ ] (optional) copy hook files: package.json, package-lock.json, .husky/, commitlint.config.cjs
 [ ] rm -rf .venv && python -m venv .venv
 [ ] bash scripts/patch_venv_activate.sh
 [ ] pip install -e ".[dev]"
+[ ] (if using hooks) npm install && npm run prepare
 [ ] Run: <new-cli-name>
 [ ] Run: <new-cli-name> --watch --env dev -v
 ```
@@ -256,6 +269,7 @@ flowchart LR
 | -------------------------------- | -------------------------------------- |
 | [SETUP.md](SETUP.md)             | Setup commands and project layout      |
 | [SETUP_STEPS.md](SETUP_STEPS.md) | Full setup walkthrough                 |
+| [HOOKS.md](HOOKS.md)             | Husky, commitlint, lint-staged flow    |
 | [CHALLENGES.md](CHALLENGES.md)   | Troubleshooting (Git Bash, watch mode) |
 | [README.md](README.md)           | Project overview                       |
 
